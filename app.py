@@ -1,10 +1,8 @@
-import os
 import openai
 import streamlit as st
-import gradio as gr
 
 api_key = os.environ["OPENAI_API_KEY"]
-#openai.api_key = api_key
+openai.api_key = api_key
 
 start_sequence = "\nAI:"
 restart_sequence = "\nHuman: "
@@ -35,18 +33,11 @@ def chatgpt_clone(input, history):
     history.append((input, output))
     return history, history
 
-st.set_page_config(page_title="My Gradio App", layout="wide")
+st.title("Pātai Bot Aotearoa")
 
-if st.button('Run App'):
-    block = gr.Blocks()
+history = st.empty()
 
-    with block:
-        gr.Markdown("""<h1><center>Pātai Bot Aotearoa</center></h1>
-        """)
-        chatbot = gr.Chatbot()
-        message = gr.Textbox(placeholder=prompt)
-        state = gr.State()
-        submit = gr.Button("SEND")
-        submit.click(chatgpt_clone, inputs=[message, state], outputs=[chatbot, state])
-
-    block.launch(share=True)
+message = st.text_input(prompt)
+if message:
+    history, output = chatgpt_clone(message, history)
+    st.write(start_sequence + output)
