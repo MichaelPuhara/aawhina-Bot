@@ -2,6 +2,7 @@ import os
 import openai
 import gradio as gr
 import streamlit as st
+from streamlit_chat import message
 
 #if you have OpenAI API key as an environment variable, enable the below
 #openai.api_key = os.getenv("OPENAI_API_KEY")
