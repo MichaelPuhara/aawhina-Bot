@@ -1,16 +1,10 @@
 import os
 import openai
-#import gradio as gr
 import streamlit as st
-from streamlit_chat import message
-
-#if you have OpenAI API key as an environment variable, enable the below
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-
-#if you have OpenAI API key as a string, enable the below
-#openai.api_key = ""
+import gradio as gr
 
 api_key = os.environ["OPENAI_API_KEY"]
+openai.api_key = api_key
 
 start_sequence = "\nAI:"
 restart_sequence = "\nHuman: "
@@ -32,8 +26,6 @@ def openai_create(prompt):
 
     return response.choices[0].text
 
-
-
 def chatgpt_clone(input, history):
     history = history or []
     s = list(sum(history, ()))
@@ -43,40 +35,18 @@ def chatgpt_clone(input, history):
     history.append((input, output))
     return history, history
 
+st.set_page_config(page_title="My Gradio App", layout="wide")
 
-# Streamlit App
-st.set_page_config(
-    page_title="Streamlit Chat - Demo",
-    page_icon=":robot:"
-)
+if st.button('Run App'):
+    block = gr.Blocks()
 
-st.header("Pātai Bot Aotearoa")
+    with block:
+        gr.Markdown("""<h1><center>Pātai Bot Aotearoa</center></h1>
+        """)
+        chatbot = gr.Chatbot()
+        message = gr.Textbox(placeholder=prompt)
+        state = gr.State()
+        submit = gr.Button("SEND")
+        submit.click(chatgpt_clone, inputs=[message, state], outputs=[chatbot, state])
 
-history_input = []
-
-if 'generated' not in st.session_state:
-    st.session_state['generated'] = []
-
-if 'past' not in st.session_state:
-    st.session_state['past'] = []
-
-
-def get_text():
-    input_text = st.text_input("Pātai mai: ", key="input")
-    return input_text 
-
-
-user_input = get_text()
-
-
-if user_input:
-    output = chatgpt_clone(user_input, history_input)
-    history_input.append([user_input, output])
-    st.session_state.past.append(user_input)
-    st.session_state.generated.append(output[0])
-
-if st.session_state['generated']:
-
-    for i in range(len(st.session_state['generated'])-1, -1, -1):
-        message(st.session_state["generated"][i], key=str(i))
-        message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+    block.launch(share=True)
