@@ -2,7 +2,7 @@ import openai
 import streamlit as st
 
 api_key = os.environ["OPENAI_API_KEY"]
-openai.api_key = api_key
+#openai.api_key = api_key
 
 start_sequence = "\nAI:"
 restart_sequence = "\nHuman: "
